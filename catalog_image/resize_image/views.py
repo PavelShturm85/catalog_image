@@ -51,7 +51,9 @@ class UploadImage(FormView):
 
 class EditImage(FormView):
     template_name = 'resize_image/edit_image.html'
-
+    form_class = EditPictureForm
+    success_url = reverse_lazy('image_list')
+    
     def get_context_data(self, pk, **kwargs):
         context = super().get_context_data(**kwargs)
         context['image'] = get_object_or_404(Picture, pk=pk)
