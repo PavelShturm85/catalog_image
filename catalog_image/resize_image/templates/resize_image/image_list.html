@@ -2,8 +2,9 @@
 
         <a href="{% url 'upload_image' %}" class="btn btn-primary btn-block">Загрузить изображение</a>
          <br>   
-        {% if image_list %} {% for image in image_list %}
-        <label>{{image.name_image}}</label>
+        {% if image_list %} 
+        {% for image in image_list %}
+        <a class="text-info" href="{% url 'edit_image' image.id %}"><label>{{image.name_image}}</label></a>
         <br>
         <img src="{{image.img.url}}"> 
         <br>

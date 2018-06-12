@@ -2,36 +2,44 @@ from django import forms
 from PIL import Image
 from .models import Picture
 
+
 class UploadPictureForm(forms.Form):
-   
+
     name_image = forms.CharField(max_length=30, required=False)
     url = forms.URLField(required=False)
     img = forms.ImageField(required=False)
 
     def clean(self):
-        cleaned_data = super(UploadPictureForm, self).clean()
+        cleaned_data = super().clean()
         url = cleaned_data.get('url')
         img = cleaned_data.get('img')
 
         if (url and img) or (not url and not img):
-            raise forms.ValidationError('херово заполнил')
-        
+            raise forms.ValidationError(
+                'Выберите только один источник загрузки')
+
         return cleaned_data
-            
-    
 
 
-""" class UploadPictureForm(forms.Form):
-   
-    name_image = forms.CharField(max_length=30, required=False )
-    url = forms.URLField(required=False)
-    img = forms.ImageField(required=False)
+class EditPictureForm(forms.Form):
+
+    name_image = forms.CharField(max_length=30, required=False)
+    image_w = forms.IntegerField(required=False)
+    image_h = forms.IntegerField(required=False)
+    image_quality = forms.IntegerField(required=False)
 
     def clean(self):
-        url = self.cleaned_data['url']
-        img = self.cleaned_data['img']
+        cleaned_data = super().clean()
+        image_w = cleaned_data.get('image_w')
+        image_h = cleaned_data.get('image_h')
+        image_quality = cleaned_data.get('image_quality')
+        
+        if image_w < 0 or image_h < 0:
+            raise forms.ValidationError(
+                'Размер должен быть положительным числом')
 
-        if (url and img) or (not url and not img):
-            raise forms.ValidationError('херово заполнил')
+        elif image_quality < 1 or image_quality > 99:
+            raise forms.ValidationError(
+                'Качество изображения должно быть числом от 1 до 99')
 
-        return self.cleaned_data """
+        return cleaned_data
