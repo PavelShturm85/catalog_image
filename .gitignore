@@ -5,6 +5,7 @@ __pycache__/
 *.pyc
 # C extensions
 *.so
+uploads/
 .vscode/
 .vscode
 # Distribution / packaging
@@ -106,3 +107,4 @@ venv.bak/
 catalog_image/resize_image/__pycache__/forms.cpython-35.pyc
 catalog_image/resize_image/__pycache__/urls.cpython-35.pyc
 catalog_image/resize_image/__pycache__/views.cpython-35.pyc
+catalog_image/db.sqlite3
