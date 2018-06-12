@@ -1,0 +1,12 @@
+{% extends 'resize_image/base.html' %} {% load staticfiles %} {% block content %}
+
+        <a href="{% url 'upload_image' %}" class="btn btn-primary btn-block">Загрузить изображение</a>
+         <br>   
+        {% if image_list %} {% for image in image_list %}
+        <label>{{image.name_image}}</label>
+        <br>
+        <img src="{{image.img.url}}"> 
+        <br>
+        <br>
+    
+{% endfor %} {% endif %} {% endblock %}
