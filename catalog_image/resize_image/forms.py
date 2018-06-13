@@ -31,12 +31,11 @@ class EditPictureForm(forms.Form):
         image_w = cleaned_data.get('image_w')
         image_h = cleaned_data.get('image_h')
         image_quality = cleaned_data.get('image_quality')
-        
+
         if (image_w and image_w < 0) or (image_h and image_h < 0):
             raise forms.ValidationError(
                 'Размер должен быть положительным числом')
 
-        
         elif image_quality and (image_quality < 1 or image_quality > 99):
             raise forms.ValidationError(
                 'Качество изображения должно быть числом от 1 до 99')

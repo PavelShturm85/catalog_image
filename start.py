@@ -1,4 +1,6 @@
+#!/usr/bin/env python3.5 
 import subprocess
+
 
 subprocess.call(["sudo", "apt-get", "-y", "install", "virtualenv"])
 subprocess.call(["virtualenv", "-p", "python3", ".env"])
