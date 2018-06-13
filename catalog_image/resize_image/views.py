@@ -1,15 +1,15 @@
-from django.shortcuts import render_to_response, redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404
 from .models import Picture
 from .forms import UploadPictureForm, EditPictureForm
 from django.urls import reverse_lazy
 from django.views.generic.base import TemplateView
-from django.http import JsonResponse, HttpResponse, HttpResponseBadRequest, HttpResponseNotAllowed
 from django.utils import timezone
-from urllib.parse import urlparse
 import requests
+import os
 from PIL import Image
+from django.conf import settings
 from django.core.files.base import ContentFile
-from django.views.generic.edit import CreateView, FormView
+from django.views.generic.edit import FormView
 # Create your views here.
 
 
@@ -28,24 +28,23 @@ class UploadImage(FormView):
     success_url = reverse_lazy('image_list')
 
     def form_valid(self, form):
-        data = form.cleaned_data
-        if data['img'] and not data['url']:
-            self.object = Picture.objects.create(
-                upload_time=timezone.now(),
-                img=data['img'],
-                name_image=data['name_image'],)
+        pic_url = form.cleaned_data['url']
+        pic_img = form.cleaned_data['img']
+        picture = Picture()
+        name = "{}.jpeg".format(str(picture.id))
+        if pic_img and not pic_url:
+            picture.img.save(name, pic_img, save=False)
 
-        elif data['url'] and not data['img']:
-            pic_url = data['url']
-            name = urlparse(pic_url).path.split('/')[-1]
+        elif pic_url and not pic_img:
             response = requests.get(pic_url)
-            picture = Picture()
+
             if response.status_code == 200:
                 picture.img.save(name, ContentFile(
                     response.content), save=False)
-                picture.upload_time = timezone.now()
-                picture.name_image = name
-                picture.save()
+
+        picture.upload_time = timezone.now()
+        picture.name_image = name
+        picture.save()
 
         return redirect(self.success_url)
 
@@ -76,18 +75,25 @@ class EditImage(FormView):
     def form_valid(self, form):
         context = self.get_context_data()
         picture = context['picture']
-        data = form.cleaned_data
+        image_w = form.cleaned_data['image_w']
+        image_h = form.cleaned_data['image_h']
+        image_quality = form.cleaned_data['image_quality']
         image = Image.open(picture.img)
-        if data['image_w'] or data['image_h']:
+
+        if image_w or image_h:
             new_size = self.get_new_size(
-                image, data['image_w'], data['image_h'])
+                image, image_w, image_h)
             image = image.resize(new_size, Image.ANTIALIAS)
 
-        if data['image_quality']:
-            quality = data['image_quality']
+        if image_quality:
+            quality = image_quality
         else:
             quality = 100
 
-        image.save(picture.name_image,
+        path_to_file = os.path.join(
+            settings.MEDIA_ROOT, "uploads/", picture.name_image)
+
+        image.save(path_to_file,
                    quality=quality, optimize=True)
+                   
         return redirect(self.success_url)

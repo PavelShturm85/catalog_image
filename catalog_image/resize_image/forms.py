@@ -5,7 +5,6 @@ from .models import Picture
 
 class UploadPictureForm(forms.Form):
 
-    name_image = forms.CharField(max_length=30, required=False)
     url = forms.URLField(required=False)
     img = forms.ImageField(required=False)
 
