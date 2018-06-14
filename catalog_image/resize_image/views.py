@@ -1,16 +1,19 @@
 
-from .forms import UploadPictureForm, EditPictureForm
-from .models import Picture
+import os
+
+import requests
 from django.conf import settings
 from django.core.files.base import ContentFile
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
-import os
 from PIL import Image
-import requests
+
+from .forms import EditPictureForm, UploadPictureForm
+from .models import Picture
+
 # Create your views here.
 
 
@@ -56,7 +59,7 @@ class EditImage(FormView):
     success_url = reverse_lazy('image_list')
 
     def get_new_size(self, original_image, new_width, new_height):
-        
+
         width_original, height_original = original_image.size
 
         if new_width and new_height:

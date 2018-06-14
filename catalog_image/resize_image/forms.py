@@ -1,5 +1,6 @@
 from django import forms
 from PIL import Image
+
 from .models import Picture
 
 
