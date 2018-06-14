@@ -1,15 +1,16 @@
-from django.shortcuts import redirect, get_object_or_404
-from .models import Picture
+
 from .forms import UploadPictureForm, EditPictureForm
-from django.urls import reverse_lazy
-from django.views.generic.base import TemplateView
-from django.utils import timezone
-import requests
-import os
-from PIL import Image
+from .models import Picture
 from django.conf import settings
 from django.core.files.base import ContentFile
+from django.shortcuts import redirect, get_object_or_404
+from django.urls import reverse_lazy
+from django.utils import timezone
+from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
+import os
+from PIL import Image
+import requests
 # Create your views here.
 
 
@@ -32,6 +33,7 @@ class UploadImage(FormView):
         pic_img = form.cleaned_data['img']
         picture = Picture()
         name = "{}.jpeg".format(str(picture.id))
+
         if pic_img and not pic_url:
             picture.img.save(name, pic_img, save=False)
 
@@ -45,7 +47,6 @@ class UploadImage(FormView):
         picture.upload_time = timezone.now()
         picture.name_image = name
         picture.save()
-
         return redirect(self.success_url)
 
 
@@ -55,31 +56,33 @@ class EditImage(FormView):
     success_url = reverse_lazy('image_list')
 
     def get_new_size(self, original_image, new_width, new_height):
-
+        
         width_original, height_original = original_image.size
+
         if new_width and new_height:
             new_size = (new_width, new_height)
+
         elif new_width:
             height = int(new_width * height_original / width_original)
             new_size = (new_width, height)
+
         elif new_height:
             width = int(new_height * width_original / height_original)
             new_size = (width, new_height)
+
         return new_size
 
-    def resize_image(self, image_w, image_h, image_quality):
+    def resize_image(self, width, height, quality):
         context = self.get_context_data()
         picture = context['picture']
         image = Image.open(picture.img)
 
-        if image_w or image_h:
+        if width or height:
             new_size = self.get_new_size(
-                image, image_w, image_h)
+                image, width, height)
             image = image.resize(new_size, Image.ANTIALIAS)
 
-        if image_quality:
-            quality = image_quality
-        else:
+        if not quality:
             quality = 100
 
         path_to_file = os.path.join(
@@ -93,34 +96,22 @@ class EditImage(FormView):
         context['picture'] = get_object_or_404(Picture, pk=self.kwargs['pk'])
         return context
 
-    def form_valid(self, form):
-
-        image_w = form.cleaned_data['image_w']
-        image_h = form.cleaned_data['image_h']
-        image_quality = form.cleaned_data['image_quality']
-        self.resize_image(image_w, image_h, image_quality)
-
-        return redirect(self.success_url)
-
-
-"""     # if request.GET.get('width') or request.GET.get('height') or request.GET.get('quality'):
     def get(self, request, pk):
+        if request.GET.get('width') or request.GET.get('height') or request.GET.get('quality'):
+            img_property = {}
 
-        if 'width' in request.GET and request.GET['width'] != "":
-            image_w = int(request.GET.get('width'))
+            for key in ('width', 'height', 'quality'):
+
+                if request.GET.get(key):
+                    img_property[key] = int(request.GET[key])
+                else:
+                    img_property[key] = None
+
+            self.resize_image(**img_property)
+            return redirect(self.success_url)
         else:
-            image_w = None
+            return super().get(request, pk)
 
-        if 'height' in request.GET and request.GET['height'] != "":
-            image_h = int(request.GET.get('height'))
-        else:
-            image_h = None
-
-        if 'quality' in request.GET and request.GET['quality'] != "":
-            image_quality = int(request.GET.get('quality'))
-        else:
-            image_quality = None
-
-        self.resize_image(image_w, image_h, image_quality)
-
-        return redirect(self.success_url) """
+    def form_valid(self, form):
+        self.resize_image(**form.cleaned_data)
+        return redirect(self.success_url)

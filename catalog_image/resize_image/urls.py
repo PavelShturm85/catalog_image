@@ -8,5 +8,3 @@ urlpatterns = [
     path('upload/', views.UploadImage.as_view(), name='upload_image'),
     path('<pk>/', views.EditImage.as_view(), name='edit_image'),
 ]
-
-

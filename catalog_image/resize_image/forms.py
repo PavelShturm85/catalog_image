@@ -22,25 +22,25 @@ class UploadPictureForm(forms.Form):
 
 class EditPictureForm(forms.Form):
 
-    image_w = forms.IntegerField(required=False)
-    image_h = forms.IntegerField(required=False)
-    image_quality = forms.IntegerField(required=False)
+    width = forms.IntegerField(required=False)
+    height = forms.IntegerField(required=False)
+    quality = forms.IntegerField(required=False)
 
     def clean(self):
         cleaned_data = super().clean()
-        image_w = cleaned_data.get('image_w')
-        image_h = cleaned_data.get('image_h')
-        image_quality = cleaned_data.get('image_quality')
+        width = cleaned_data.get('width')
+        height = cleaned_data.get('height')
+        quality = cleaned_data.get('quality')
 
-        if (image_w and image_w < 0) or (image_h and image_h < 0):
+        if (width and width < 0) or (height and height < 0):
             raise forms.ValidationError(
                 'Размер должен быть положительным числом')
 
-        elif image_quality and (image_quality < 1 or image_quality > 99):
+        elif quality and (quality < 1 or quality > 99):
             raise forms.ValidationError(
                 'Качество изображения должно быть числом от 1 до 99')
 
-        elif not image_w and not image_h and not image_quality:
+        elif not width and not height and not quality:
             raise forms.ValidationError(
                 'Введите необходимый параметр')
 

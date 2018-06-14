@@ -1,29 +1,26 @@
 {% extends 'resize_image/base.html' %} 
 {% load staticfiles %}
- {% block content %}
+{% block content %}
  <form action="" method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    
-   
    <div class="form-group">
         <h4>Изменение изображения</h4>
        <label>Ширина изображения</label>
-       {{ form.image_w }}
+       {{ form.width }}
    </div>
    <br>
    <div class="form-group">
        <label>Высота изображения</label>
-       {{ form.image_h }}
+       {{ form.height }}
    </div>    
    <div class="form-group">
        <label>Качество изображения от 1 до 99</label>
-       {{ form.image_quality }}
+       {{ form.quality }}
    </div>  
    <div style="color: red;">{{ form.non_field_errors }}</div>
     <input type="submit" value="Submit" />       
-   
-</form>
+ </form>
 <br>
  <img src="{{picture.img.url}}">
         
- {% endblock %}
+{% endblock %}
