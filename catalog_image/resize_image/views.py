@@ -48,7 +48,6 @@ class UploadImage(FormView):
                     response.content), save=False)
 
         picture.upload_time = timezone.now()
-        picture.name_image = name
         picture.save()
         return redirect(self.success_url)
 
@@ -89,7 +88,7 @@ class EditImage(FormView):
             quality = 100
 
         path_to_file = os.path.join(
-            settings.MEDIA_ROOT, "uploads/", picture.name_image)
+            settings.MEDIA_ROOT, "uploads/", '{}.jpeg'.format(str(picture.id)))
 
         image.save(path_to_file,
                    quality=quality, optimize=True)

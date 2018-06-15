@@ -4,7 +4,7 @@
          <br>   
         {% if image_list %} 
         {% for image in image_list %}
-        <a class="text-info" href="{% url 'edit_image' image.id %}"><label>{{image.name_image}}</label></a>
+        <a class="text-info" href="{% url 'edit_image' image.id %}"><label>{{image.id}}</label></a>
         <br>
         <img src="{{image.img.url}}"> 
         <br>
